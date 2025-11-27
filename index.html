@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Retro Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind (browser build) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+ 
+</head>
+<body class="flex flex-col min-h-screen bg-violet-100 text-white"></body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="fixed inset-x-0 top-0 z-40 bg-blue-500 py-4">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-center">
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Retro Calculator        
+      </h1>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <!-- Add top & bottom padding so the fixed header/footer don’t cover anything -->
+    <main class="flex flex-col pt-20 pb-10 w-full max-w-xs max-h-screen mx-auto">   
+
+ <body class="flex flex-col items-center justify-center h-screen bg-gray-100"><br>
+
+  <!-- ==================== CALCULATOR CONTAINER ==================== -->
+  <div class="flex flex-col w-full max-w-xs max-h-screen bg-white rounded-xl shadow-lg overflow-hidden">
+
+    <!-- ---------- RESULT DISPLAY (top row) ---------- -->
+    <div id="display"
+         class="bg-gray-800 text-white text-2xl font-mono text-right p-4 h-20 flex items-center justify-end overflow-x-auto whitespace-nowrap">
+      0
+    </div>
+
+    <!-- ---------- MAIN SECTION (keypad + ops) ---------- -->
+    <div class="flex flex-1">
+
+      <!-- ----- NUMERIC KEYPAD (left side) ----- -->
+      <div class="grid grid-cols-3 gap-2 p-2 flex-1">
+
+        <!-- Row 1 -->
+        <button data-key="7"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          7
+        </button>
+        <button data-key="8"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          8
+        </button>
+        <button data-key="9"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          9
+        </button>
+
+        <!-- Row 2 -->
+        <button data-key="4"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          4
+        </button>
+        <button data-key="5"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          5
+        </button>
+        <button data-key="6"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          6
+        </button>
+
+       <!-- Row 3 -->
+        <button data-key="1"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          1
+        </button>
+        <button data-key="2"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          2
+        </button>
+        <button data-key="3"
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          3
+        </button>
+
+        <!-- Row 4 (0, decimal, clear) -->
+        <button data-key="0"
+                class="calc-btn col-span-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          0
+        </button>
+        <button data-key="."
+                class="calc-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded">
+          .
+        </button>
+        <button data-action="clear"
+                class="calc-btn bg-red-400 hover:bg-red-500 text-white font-bold py-4 rounded">
+          C
+        </button>
+      </div>
+
+      <!-- ----- OPERATIONS COLUMN (right side) ----- -->
+      <div class="flex flex-col gap-2 p-2 w-20">
+
+        <button data-op="/"
+                class="op-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded">
+          ÷
+        </button>
+        <button data-op="*"
+                class="op-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded">
+          ×
+        </button>
+        <button data-op="-"
+                class="op-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded">
+          −
+        </button>
+        <button data-op="+"
+                class="op-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded">
+          +
+        </button>
+        <button data-action="equals"
+                class="op-btn bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded mt-auto">
+          =
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SIMPLE LOGIC (vanilla JS) ==================== -->
+  <script>
+    const display = document.getElementById('display');
+    let expression = '';
+
+    const updateDisplay = () => {
+      display.textContent = expression || '0';
+    };
+
+    // Numbers & decimal
+    document.querySelectorAll('.calc-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key;
+        if (key !== undefined) {
+          expression += key;
+          updateDisplay();
+        }
+      });
+    });
+
+    // Operators (+, -, *, /)
+    document.querySelectorAll('.op-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const op = btn.dataset.op;
+        if (op) {
+          // Avoid duplicate operators
+          if (expression && !/[+\-*/]$/.test(expression)) {
+            expression += op;
+            updateDisplay();
+          }
+        }
+      });
+    });
+
+    // Clear
+    document.querySelector('[data-action="clear"]').addEventListener('click', () => {
+      expression = '';
+      updateDisplay();
+    });
+
+    // Equals – safe evaluation
+    document.querySelector('[data-action="equals"]').addEventListener('click', () => {
+      try {
+        const safeExpr = expression.replace(/÷/g, '/');
+        const result = Function(`'use strict'; return (${safeExpr})`)();
+        expression = String(result);
+      } catch (e) {
+        expression = 'Error';
+      }
+      updateDisplay();
+    });
+  </script> 
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="fixed inset-x-0 bottom-0 z-40 bg-blue-500 text-white py-4 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-sm">
+      <a href="#" class="hover:underline mb-2 sm:mb-0">Contact</a>
+      <p class="text-center">
+        © 2025 Retro Calculator by Anastasia. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
